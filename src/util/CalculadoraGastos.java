@@ -82,22 +82,21 @@ public class CalculadoraGastos {
      * 
      */
     public void exibirResultados() {
+        
         Month nomeMes = Month.of(dados.mes);
         String nomeMesExtenso = nomeMes.getDisplayName(TextStyle.FULL, new Locale("pt", "BR"));
 
         System.out.println("\n===================================");
-        System.out.println("BEM-VINDO ! , " + dados.nomeUsuario);
+        System.out.println("BEM-VINDO !  " + dados.nomeUsuario);
         System.out.println("===================================\n");
-
-        System.out.println("MÊS DE : " + nomeMesExtenso + "\n");
-
-        System.out.println("Dias trabalhados: " + diasTrabalhados);
-        System.out.println("Folgas: " + folgas + "\n");
-
+        System.out.println("MÊS DE " + nomeMesExtenso + "\n");
+        System.out.println("Dias trabalhados => " + diasTrabalhados);
+        System.out.println("Folgas =>  " + folgas + "\n");
+        System.out.println("-----------------------------------\n");
         System.out.println("GASTO MENSAL\n ");
         System.out.printf("%-20s R$ %-10.2f\n", "Alimentação:", custoTotalAlimentacao);
         System.out.printf("%-20s R$ %-10.2f\n", "Locomoção:", custoTotalLocomocao);
-
+        System.out.println("\n-----------------------------------");
         System.out.println("\nGASTOS PARCIAL\n");
         System.out.printf("%-20s %d\n", "Dias restantes:", diasRestantes);
         System.out.printf("%-20s R$ %-10.2f\n", "Alimentação:", custoRestanteAlimentacao);
