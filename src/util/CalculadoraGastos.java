@@ -86,7 +86,7 @@ public class CalculadoraGastos {
         String nomeMesExtenso = nomeMes.getDisplayName(TextStyle.FULL, new Locale("pt", "BR"));
 
         System.out.println("\n===================================");
-        System.out.println("BEM-VINDO, " + dados.nomeUsuario);
+        System.out.println("BEM-VINDO ! , " + dados.nomeUsuario);
         System.out.println("===================================\n");
 
         System.out.println("MÊS DE : " + nomeMesExtenso + "\n");
