@@ -2,99 +2,107 @@ package util;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.YearMonth;
+import java.time.format.TextStyle;
+import java.util.Locale;
 import model.GastosMensais;
 
 public class CalculadoraGastos {
-   private final GastosMensais dados;
-   private int diasTrabalhados;
-   private int folgas;
-   private double custoTotalAlimentacao;
-   private double custoTotalLocomocao;
-   private int diasRestantes;
-   private double custoRestanteAlimentacao;
-   private double custoRestanteLocomocao;
+    private final GastosMensais dados;
+    private int diasTrabalhados;
+    private int folgas;
+    private double custoTotalAlimentacao;
+    private double custoTotalLocomocao;
+    private int diasRestantes;
+    private double custoRestanteAlimentacao;
+    private double custoRestanteLocomocao;
 
-   public CalculadoraGastos(GastosMensais var1) {
-      this.dados = var1;
-   }
+    public CalculadoraGastos(GastosMensais dados) {
+        this.dados = dados;
+    }
 
-   public void processar() {
-      byte var1;
-      var1 = switch (this.dados.mes) {
-           case 1, 3, 5, 7, 8, 10, 12 -> 31;
-           case 2 -> 28;
-           case 4, 6, 9, 11 -> 30;
-           default -> 30;
-       };
+    public void processar() {
 
-      this.folgas = 0;
+        // Dias do mês (considera bissexto automaticamente)
 
-      for(int var2 = 1; var2 <= var1; ++var2) {
-         LocalDate var3 = LocalDate.of(this.dados.ano, this.dados.mes, var2);
-         DayOfWeek[] var4 = this.dados.diasFolga;
-         int var5 = var4.length;
+        int diasMes = YearMonth.of(dados.ano, dados.mes).lengthOfMonth();
 
-         for(int var6 = 0; var6 < var5; ++var6) {
-            DayOfWeek var7 = var4[var6];
-            if (var3.getDayOfWeek() == var7) {
-               ++this.folgas;
-               break;
+
+
+       DayOfWeek[] folgasArr = (dados.diasFolga != null)
+        ? dados.diasFolga.toArray(DayOfWeek[]::new)
+        : new DayOfWeek[0];
+
+     for (int dia = 1; dia <= diasMes; dia++) {
+       LocalDate data = LocalDate.of(dados.ano, dados.mes, dia);
+      for (DayOfWeek f : folgasArr) {
+        if (data.getDayOfWeek() == f) {
+            this.folgas++;
+            break;
+                }
             }
-         }
-      }
+        }
 
-      this.diasTrabalhados = var1 - this.folgas;
-      this.custoTotalAlimentacao = this.dados.valorAlimentacao * (double)this.diasTrabalhados;
-      this.custoTotalLocomocao = this.dados.valorPassagem * (double)this.diasTrabalhados * 2.0;
-      LocalDate var11 = LocalDate.now();
-      int var12 = 0;
+        // Calculo de dias trabalhados e custos totais
 
-      for(int var13 = 1; var13 <= var11.getDayOfMonth(); ++var13) {
-         LocalDate var14 = LocalDate.of(this.dados.ano, this.dados.mes, var13);
-         boolean var15 = false;
-         DayOfWeek[] var16 = this.dados.diasFolga;
-         int var8 = var16.length;
+        diasTrabalhados = diasMes - folgas;
+        custoTotalAlimentacao = dados.valorAlimentacao * diasTrabalhados;
+        custoTotalLocomocao = dados.valorPassagem * diasTrabalhados * 2.0;
 
-         for(int var9 = 0; var9 < var8; ++var9) {
-            DayOfWeek var10 = var16[var9];
-            if (var14.getDayOfWeek() == var10) {
-               var15 = true;
-               break;
+        // Dias passados somente se o mês/ano do input for o mês/ano atuais
+
+        LocalDate hoje = LocalDate.now();
+        int diasPassados = 0;
+        if (dados.ano == hoje.getYear() && dados.mes == hoje.getMonthValue()) {
+            int limite = Math.min(hoje.getDayOfMonth(), diasMes);
+            for (int dia = 1; dia <= limite; dia++) {
+                LocalDate data = LocalDate.of(dados.ano, dados.mes, dia);
+                boolean ehFolga = false;
+                for (DayOfWeek f : folgasArr) {
+                    if (data.getDayOfWeek() == f) {
+                        ehFolga = true;
+                        break;
+                    }
+                }
+                if (!ehFolga) diasPassados++;
             }
-         }
+        }
 
-         if (!var15) {
-            ++var12;
-         }
-      }
+        // Restantes
+        diasRestantes = diasTrabalhados - diasPassados;
+        custoRestanteAlimentacao = dados.valorAlimentacao * diasRestantes;
+        custoRestanteLocomocao = dados.valorPassagem * diasRestantes * 2.0;
+    }
 
-      this.diasRestantes = this.diasTrabalhados - var12;
-      this.custoRestanteAlimentacao = this.dados.valorAlimentacao * (double)this.diasRestantes;
-      this.custoRestanteLocomocao = this.dados.valorPassagem * (double)this.diasRestantes * 2.0;
-   }
 
-   public void exibirResultados() {
 
-      System.out.println("\n****************************");
+    /*
+     * Saida do resultado 
+     * 
+     */
+    public void exibirResultados() {
+        Month nomeMes = Month.of(dados.mes);
+        String nomeMesExtenso = nomeMes.getDisplayName(TextStyle.FULL, new Locale("pt", "BR"));
 
-      System.out.println("Dias trabalhados no mês: " + this.diasTrabalhados);
+        System.out.println("\n===================================");
+        System.out.println("BEM-VINDO, " + dados.nomeUsuario);
+        System.out.println("===================================\n");
 
-      System.out.println("Folgas no mês: " + this.folgas);
+        System.out.println("MÊS DE : " + nomeMesExtenso + "\n");
 
-      System.out.println("\nCUSTO TOTAL DO MÊS");
+        System.out.println("Dias trabalhados: " + diasTrabalhados);
+        System.out.println("Folgas: " + folgas + "\n");
 
-      System.out.println("Alimentação: R$ " + this.custoTotalAlimentacao);
+        System.out.println("GASTO MENSAL\n ");
+        System.out.printf("%-20s R$ %-10.2f\n", "Alimentação:", custoTotalAlimentacao);
+        System.out.printf("%-20s R$ %-10.2f\n", "Locomoção:", custoTotalLocomocao);
 
-      System.out.println("Locomoção: R$ " + this.custoTotalLocomocao);
-
-      System.out.println("\nCUSTO RESTANTE DO MÊS");
-
-      System.out.println("Dias restantes: " + this.diasRestantes);
-
-      System.out.println("Alimentação restante: R$ " + this.custoRestanteAlimentacao);
-
-      System.out.println("Locomoção restante: R$ " + this.custoRestanteLocomocao);
-      
-      System.out.println("\n****************************");
-   }
+        System.out.println("\nGASTOS PARCIAL\n");
+        System.out.printf("%-20s %d\n", "Dias restantes:", diasRestantes);
+        System.out.printf("%-20s R$ %-10.2f\n", "Alimentação:", custoRestanteAlimentacao);
+        System.out.printf("%-20s R$ %-10.2f\n", "Locomoção:", custoRestanteLocomocao);
+        System.out.println("\n===================================\n");
+    }
 }
+

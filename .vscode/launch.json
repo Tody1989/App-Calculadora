@@ -1,12 +1,14 @@
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "type": "java",
-      "name": "Executar Main",
-      "request": "launch",
-      "mainClass": "app.Main",
-      "projectName": "gastos-mensais"
-    }
-  ]
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Executar Main",
+            "request": "launch",
+            "mainClass": "app.Main",
+            "projectName": "gastos-mensais",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        }
+    ]
 }
