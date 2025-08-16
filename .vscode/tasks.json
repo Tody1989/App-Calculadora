@@ -1,0 +1,36 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Compilar Projeto",
+      "type": "shell",
+      "command": "javac",
+      "args": [
+        "-d",
+        "bin",
+        "src/app/Main.java",
+        "src/model/GastosMensais.java",
+        "src/util/CalculadoraGastos.java"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": "$javac"
+    },
+    {
+      "label": "Executar Projeto",
+      "type": "shell",
+      "command": "java",
+      "args": [
+        "-cp",
+        "bin",
+        "app.Main"
+      ],
+      "dependsOn": [
+        "Compilar Projeto"
+      ],
+      "group": "test"
+    }
+  ]
+}
