@@ -1,6 +1,7 @@
 /*
  * 
- * Programa para calcular gastos mensais 
+ * Programa para calcular gastos mensais
+ * 
  */
 
 
